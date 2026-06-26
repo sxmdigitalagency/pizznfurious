@@ -34,8 +34,26 @@ onScroll();
 const burger = document.querySelector('.nav-burger');
 const navLinks = document.querySelector('.nav-links');
 if (burger && navLinks) {
-  burger.addEventListener('click', () => navLinks.classList.toggle('open'));
-  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+  // overlay créé en JS (pas besoin de l'ajouter dans chaque page HTML)
+  const backdrop = document.createElement('div');
+  backdrop.className = 'nav-backdrop';
+  document.body.appendChild(backdrop);
+
+  const setMenu = (open) => {
+    navLinks.classList.toggle('open', open);
+    burger.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    document.body.classList.toggle('nav-locked', open);
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+
+  burger.setAttribute('aria-expanded', 'false');
+  burger.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+  backdrop.addEventListener('click', () => setMenu(false));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+  // si on repasse en desktop, on réinitialise proprement
+  window.matchMedia('(min-width:861px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
 }
 
 // ============ Reveal on scroll ============

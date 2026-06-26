@@ -48,8 +48,13 @@ img{display:block;max-width:100%}
 
 /* ============ NAV ============ */
 .nav{position:fixed;inset:0 0 auto 0;z-index:200;padding:1.1rem 0;border-bottom:1px solid transparent;
-  transition:padding .3s,background .3s,border-color .3s}
-.nav.scrolled{padding:.7rem 0;background:rgba(var(--bg-rgb),.92);backdrop-filter:blur(10px);border-bottom-color:var(--border)}
+  transition:padding .3s,border-color .3s}
+/* fond flouté porté par un pseudo-élément : .nav ne porte AUCUN filtre,
+   sinon il deviendrait le référent des enfants position:fixed (bug menu mobile) */
+.nav::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;pointer-events:none;
+  background:rgba(var(--bg-rgb),.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:opacity .3s}
+.nav.scrolled{padding:.7rem 0;border-bottom-color:var(--border)}
+.nav.scrolled::before{opacity:1}
 .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
 .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;white-space:nowrap}
 .logo-mark{width:38px;height:38px;flex:none}
@@ -67,8 +72,16 @@ img{display:block;max-width:100%}
   font:inherit;transition:color .2s,background .2s}
 .lang-switch button.active{color:var(--bg);background:var(--gold)}
 .lang-switch button:hover:not(.active){color:var(--gold)}
-.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.5rem}
-.nav-burger span{width:24px;height:2px;background:var(--gold)}
+.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.5rem;z-index:210;position:relative}
+.nav-burger span{width:24px;height:2px;background:var(--gold);transition:transform .3s var(--ease),opacity .2s}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+/* overlay sombre derrière le panneau menu (mobile) */
+.nav-backdrop{position:fixed;inset:0;z-index:190;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;
+  transition:opacity .3s,visibility .3s}
+.nav-backdrop.open{opacity:1;visibility:visible}
+body.nav-locked{overflow:hidden}
 
 /* ============ BUTTONS ============ */
 .btn{
